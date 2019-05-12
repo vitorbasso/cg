@@ -5,8 +5,11 @@ import colors
 largura = 800
 altura = 600
 
-#Defina a cor de fundo entre os seguintes valores: 0 - Branco e 1 - Preto   ----  A cor dos desenhos será a outra
+#Defina o esquema de cor padrão entre os seguintes valores: 0 - (background branco, desenho preto) ou 1 - (background preto, desenho branco)
 cor = 0
+
+#Defina a taxa de atualização da tela
+atualizacao = 144
 
 
 
@@ -21,3 +24,5 @@ if cor:
 else:
     BACKGROUND_COLOR = colors.WHITE
     DRAW_COLOR = colors.BLACK
+
+REFRESH_RATE = atualizacao

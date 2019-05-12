@@ -2,6 +2,7 @@ import pygame, sys, colors, bresenham, square, rectangle, settings, drawings
 
 #Armazena os objetos permanentes na tela
 toDraw = []
+undo = []
 
 #escolhe qual o tipo do desenho - linha, retangulo, quadrado
 drawMethod = bresenham.drawLine
@@ -27,14 +28,12 @@ pressed = False
 starting_pos = (0,0)
 last_pos = (0,0)
 ending_pos = (0,0)
-late_pos = (0,0)
-ctrl = False
 
 #Seta os pixels nas posições especificadas em toDraw para serem pintados
 def draw():
     for drawing in toDraw:
         for pixel in drawing.getPos():
-            gameDisplay.set_at(pixel, settings.DRAW_COLOR)
+            gameDisplay.set_at(pixel, drawing.getColor())
 
 #Atualiza a janela, mostrando as atualizações
 def show(starting, ending):
@@ -85,9 +84,15 @@ while not finished:
             elif event.key == pygame.K_3:
                 drawMethod = square.drawSquare
                 locationMethod = square.getLocationSquare
-            #Famoso ctrl + z nao quer funcionar de jeito nenhum essa bagaca
+            #Famoso ctrl + z  - undo
             elif event.key == pygame.K_z and pygame.key.get_mods() & pygame.KMOD_CTRL and len(toDraw) > 0:
-                del toDraw[-1]
+                undo.append(toDraw.pop())
+                gameDisplay.fill(settings.BACKGROUND_COLOR)
+                draw()
+                showAll()
+            #Famoso ctrl + y - redo
+            elif event.key == pygame.K_y and pygame.key.get_mods() & pygame.KMOD_CTRL and len(undo) > 0:
+                toDraw.append(undo.pop())
                 gameDisplay.fill(settings.BACKGROUND_COLOR)
                 draw()
                 showAll()
@@ -102,7 +107,7 @@ while not finished:
         toDraw = []
         showAll()
 
-    clock.tick(144)
+    clock.tick(settings.REFRESH_RATE)
 
 pygame.quit()
 quit()
