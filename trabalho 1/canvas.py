@@ -1,4 +1,4 @@
-import pygame, colors, square, rectangle, settings, drawings, line, polyline, circle
+import pygame, colors, square, rectangle, settings, drawings, line, polyline, circle, curve
 
 #Setando variaveis pygame
 pygame.init()
@@ -14,7 +14,7 @@ undo = []
 #Variaveis para controle
 finished = False
 pressed = False
-keepDrawing = False
+specialType = False
 poly = False
 starting_pos = (0,0)
 last_pos = (0,0)
@@ -137,7 +137,7 @@ while not finished:
             toDraw.append(drawing)
             drawAndShow()
             print("Ending pos: " , ending_pos)
-            if keepDrawing:
+            if specialType:
                 poly = True
             else:
                 poly = False
@@ -161,32 +161,39 @@ while not finished:
             if event.key == pygame.K_1:
                 print("Drawing LINE")
                 drawMethod = line.drawLine
-                keepDrawing = line.keepDrawing()
+                specialType = line.special()
                 locationMethod = rectangle.getLocationRectangle
                 drawAndShow() #Essa atualizacao e para caso o usuario mude o mode sem movimentar o mouse, o que nao causaria a atualizacao da tela
             elif event.key == pygame.K_2:
                 print("Drawing RECTANGLE")
                 drawMethod = rectangle.drawRectangle
-                keepDrawing = rectangle.keepDrawing()
+                specialType = rectangle.special()
                 locationMethod = rectangle.getLocationRectangle
                 drawAndShow()
             elif event.key == pygame.K_3:
                 print("Drawing SQUARE")
                 drawMethod = square.drawSquare
-                keepDrawing = square.keepDrawing()
+                specialType = square.special()
                 locationMethod = square.getLocationSquare
                 drawAndShow()
             elif event.key == pygame.K_4:
                 print("Drawing POLYLINE")
                 drawMethod = polyline.drawPoly
-                keepDrawing = polyline.keepDrawing()
+                specialType = polyline.special()
                 locationMethod = square.getLocationSquare
                 drawAndShow()
             elif event.key == pygame.K_5:
                 print("Drawing CIRCLE")
                 drawMethod = circle.drawCircle
-                keepDrawing = line.keepDrawing()
+                specialType = circle.special()
                 locationMethod = square.getLocationSquare
+                drawAndShow()
+            elif event.key == pygame.K_6:
+                print("Drawing CURVE")
+                drawMethod = curve.drawCurve
+                specialType = curve.special()
+                locationMethod = square.getLocationSquare
+
                 drawAndShow()
             #Famoso ctrl + z  - undo
             elif isCtrlZ(event) and len(toDraw) > 0:

@@ -4,5 +4,5 @@ def drawLine(initialPos, endPos):
     for pixel in bresenham.drawLine(initialPos,endPos):
         yield pixel
 
-def keepDrawing():
+def special():
     return False

@@ -1,3 +1,7 @@
+def extractPoints(starting_pos, ending_pos):
+    (x0, y0), (x1, y1) = starting_pos, ending_pos
+    return x0, y0, x1, y1
+
 def drawLine(starting_pos, ending_pos):
     (x0, y0), (x1, y1) = starting_pos, ending_pos
     
