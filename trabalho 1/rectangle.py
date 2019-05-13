@@ -26,3 +26,6 @@ def drawRectangle(initialPos, endPos):
         yield pixel
     for pixel in bresenham.drawLine(thirdPos, endPos):
         yield pixel
+
+def keepDrawing():
+    return False

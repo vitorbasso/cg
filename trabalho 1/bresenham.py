@@ -1,5 +1,3 @@
-import pygame
-
 def drawLine(starting_pos, ending_pos):
     (x0, y0), (x1, y1) = starting_pos, ending_pos
     
@@ -27,5 +25,3 @@ def drawLine(starting_pos, ending_pos):
             y += 1
             D -= 2*dx
         D += 2*dy
-
-    

@@ -37,3 +37,6 @@ def drawSquare(initialPos, endPos):
     
     for pixel in rectangle.drawRectangle((x0, y0), (x1, y1)):
         yield pixel
+
+def keepDrawing():
+    return False

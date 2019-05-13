@@ -5,6 +5,7 @@ class Drawing:
     def __init__(self, color):
         self.color = color
         self.myCurves = []
+
     def setPos(self, pixel):
         self.myCurves.append(pixel)
     def getPos(self):
@@ -19,4 +20,3 @@ class Drawing:
         self.color = color
     def getColor(self):
         return self.color
-        
