@@ -1,118 +1,88 @@
-import bresenham, settings
+import settings
 
 SPECIAL_TYPE = "fill"
-toDraw = []
+pixels = []
+toFill = []
+(width, height) = settings.SCREEN_DIMENSION
+left = False
+right = False
+up = False
+down = False
 
-def getToDraw(toD):
-    global toDraw
-    toDraw = toD
+
+def getToDraw(toDraw):
+    global pixels
+    for drawing in toDraw:
+        for pixel in drawing.getPos():
+            pixels.append(pixel)
+
+def getNeighbours(firstPixel):
+    global width
+    global height
+    global pixels
+    global toFill
+    global left
+    global right
+    global up
+    global down
+    pixel = firstPixel
+    hasMore = True
+    searched = []
+    index = 0
+    
+
+    toFill.append(firstPixel)
+
+    
+
+    while hasMore:
+        left = False
+        right = False
+        up = False
+        down = False
+        (x0, y0) = pixel
+        searched.append(pixel)
+        if (x0, y0 - 1) in pixels:
+            up = True
+        if (x0 - 1, y0) in pixels:
+            left = True
+        if (x0, y0 + 1) in pixels:
+            down = True
+        if (x0 + 1, y0) in pixels:
+            right = True
+     
+        if x0 + 1 < width and not (x0 + 1, y0) in pixels and not (x0 + 1, y0) in toFill:
+            toFill.append((x0, y0))
+        if y0 + 1 < height and not (x0, y0 + 1) in pixels and not (x0, y0 + 1) in toFill:
+            toFill.append((x0, y0 + 1))      
+        if x0 - 1 > settings.CANVAS_START_AT and not (x0 - 1, y0) in pixels and not (x0 - 1, y0) in toFill:
+            toFill.append((x0 - 1, y0))      
+        if y0 - 1 >= 0 and not (x0, y0 - 1) in pixels and not (x0, y0 - 1) in toFill:
+            toFill.append((x0, y0 - 1))       
+        if  x0 + 1 < width and y0 + 1 < height and not (x0 + 1, y0 + 1) in pixels and not (x0 + 1, y0 + 1) in toFill and not (right and down):
+            toFill.append((x0 + 1, y0 + 1))
+        if x0 - 1 >= settings.CANVAS_START_AT and y0 - 1 > 0 and not (x0 - 1, y0 - 1) in pixels and not (x0 - 1, y0 - 1) in toFill  and not (left and up):
+            toFill.append((x0 - 1, y0 - 1))
+        if x0 + 1 < width and y0 - 1 > 0 and not (x0 + 1, y0 - 1) in pixels and not (x0 + 1, y0 - 1) in toFill and not (right and up):
+            toFill.append((x0 + 1, y0 - 1))
+        if x0 - 1 >= settings.CANVAS_START_AT and y0 + 1 < height and not (x0 - 1, y0 + 1) in pixels and not (x0 - 1, y0 + 1) in toFill  and not (left and down):
+            toFill.append((x0 - 1, y0 + 1))
+
+
+        hasMore = False
+        while (toFill[index] in searched and index + 1 < len(toFill)):
+            index += 1
+        if not toFill[index] in searched:
+            hasMore = True
+            pixel = toFill[index]
 
 
 def drawFill(_, ending_pos):
-    jumpLine = False
-    jumpCol = False
-    finished = False
-    (x, y) = ending_pos
-    (width, height) = settings.SCREEN_DIMENSION
+    global pixels
+    global toFill
+    firstPixel = ending_pos
+    getNeighbours(firstPixel)
 
-    while not finished:
-        jumpCol = False
-        i = y
-        while i < height and not jumpCol:
-            jumpLine = False
-            j = x
-            while ( j < width and not jumpLine):
-                pixel = (j, i)
-                for drawing in toDraw:
-                    if pixel in drawing.getPos():
-                        jumpLine = True
-                        if pixel[1] == y:
-                            jumpCol = True
-                        if pixel == (x,y):
-                            finished = True
-                        y += 1
-                if not jumpLine:
-                    yield pixel
-                j += 1
-            i += 1
-
-    finished = False
-    jumpLine = False
-    jumpCol = False
-    
-    (x, y) = ending_pos
-
-    while not finished:
-        jumpCol = False
-        i = y
-        while i > 0 and not jumpCol:
-            jumpLine = False
-            j = x
-            while ( j > 0 and not jumpLine):
-                pixel = (j, i)
-                for drawing in toDraw:
-                    if pixel in drawing.getPos():
-                        jumpLine = True
-                        if pixel[1] == y:
-                            jumpCol = True
-                        if pixel == (x,y):
-                            finished = True
-                        y -= 1
-                if not jumpLine:
-                    yield pixel
-                j -= 1
-            i -= 1
-
-    finished = False
-    jumpLine = False
-    jumpCol = False
-    
-    (x, y) = ending_pos
-
-    while not finished:
-        jumpCol = False
-        i = y
-        while i > 0 and not jumpCol:
-            jumpLine = False
-            j = x
-            while ( j < width and not jumpLine):
-                pixel = (j, i)
-                for drawing in toDraw:
-                    if pixel in drawing.getPos():
-                        jumpLine = True
-                        if pixel[1] == y:
-                            jumpCol = True
-                        if pixel == (x,y):
-                            finished = True
-                        y -= 1
-                if not jumpLine:
-                    yield pixel
-                j += 1
-            i -= 1
-
-    finished = False
-    jumpLine = False
-    jumpCol = False
-    
-    (x, y) = ending_pos
-
-    while not finished:
-        jumpCol = False
-        i = y
-        while i < height and not jumpCol:
-            jumpLine = False
-            j = x
-            while ( j > 0 and not jumpLine):
-                pixel = (j, i)
-                for drawing in toDraw:
-                    if pixel in drawing.getPos():
-                        jumpLine = True
-                        if pixel[1] == y:
-                            jumpCol = True
-                        if pixel == (x,y):
-                            finished = True
-                        y += 1
-                if not jumpLine:
-                    yield pixel
-                j -= 1
-            i += 1
+    while(len(toFill) > 0):
+        yield toFill.pop()
+  

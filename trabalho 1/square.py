@@ -20,17 +20,13 @@ def getSquare(initialPos, endPos):
 
 
 def biggerSmaller(x, y):
-    bigger = x if x > y else y
-    smaller = y if x > y else x
+    if x > y:
+        bigger = x
+        smaller = y
+    else:
+        bigger = y
+        smaller = x
     return bigger, smaller
-
-
-def getLocationSquare(initialPos, endPos):
-    (x0, y0) , (x1, y1) = getSquare(initialPos, endPos)
-
-    x0, x1 = biggerSmaller(x0,x1)
-    y0, y1 = biggerSmaller(y0,y1)
-    return x1, y1, x0, y0
 
 def drawSquare(initialPos, endPos):
     (x0, y0) , (x1, y1) = getSquare(initialPos, endPos)

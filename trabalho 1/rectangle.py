@@ -1,12 +1,7 @@
 import bresenham
 
 
-def getLocationRectangle(initialPos, endPos):
-    (x0, y0), (x1, y1) = initialPos, endPos
-    biggerX, smallerX = biggerSmaller(x0, x1)
-    biggerY, smallerY = biggerSmaller(y0, y1)
-    
-    return smallerX, smallerY, biggerX, biggerY
+
 
 def biggerSmaller(x, y):
     bigger = x if x > y else y
