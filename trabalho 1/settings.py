@@ -8,6 +8,7 @@ altura = 600
 #Defina o esquema de cor padrão entre os seguintes valores: 0 - (background branco, desenho preto) ou 1 - (background preto, desenho branco)
 cor = 0
 
+
 #Defina a taxa de atualização da tela
 atualizacao = 144
 
@@ -26,3 +27,4 @@ else:
     DRAW_COLOR = colors.BLACK
 
 REFRESH_RATE = atualizacao
+SPECIAL_TYPE_STANDARD = ""

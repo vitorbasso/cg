@@ -1,4 +1,4 @@
-import pygame, colors, square, rectangle, settings, drawings, line, polyline, circle, curve
+import pygame, colors, square, rectangle, settings, drawings, line, polyline, circle, curve, fill
 
 #Setando variaveis pygame
 pygame.init()
@@ -14,11 +14,14 @@ undo = []
 #Variaveis para controle
 finished = False
 pressed = False
-specialType = False
+specialType = settings.SPECIAL_TYPE_STANDARD
 poly = False
+curva = False
+curvaPhase = 2
 starting_pos = (0,0)
 last_pos = (0,0)
 ending_pos = (0,0)
+objectColor = settings.DRAW_COLOR
 
 #Define qual o metodo de desenho e qual o metodo de deteccao da area na tela em que o desenho foi feito
 drawMethod = line.drawLine
@@ -50,7 +53,7 @@ def drawAndShow():
     drawScene()
     if pressed:
         for pixel in drawMethod(starting_pos, last_pos):
-            draw(pixel, settings.DRAW_COLOR)
+            draw(pixel, objectColor)
     refreshScreen()
 
 def resetCanvas(event):
@@ -70,6 +73,55 @@ def endPoly(event):
         pressed = False
         drawAndShow()
     return end
+
+def updateCurvaPhase():
+    global curvaPhase
+    global pressed
+    global curva
+    global drawMethod
+    if curvaPhase == 3:
+        pressed = False
+        curvaPhase = 0
+    if curvaPhase == 0:
+        curvaPhase = 1
+        drawMethod = curve.drawCurve
+    elif curvaPhase == 1:
+        curvaPhase = 2
+        drawMethod = curve.getFirstControl
+    elif curvaPhase == 2:
+        curvaPhase = 3
+        drawMethod = curve.getSecondControl
+
+def getCurvaPhase():
+    global curvaPhase
+    return curvaPhase
+
+def isSpecial():
+    global specialType
+    global poly
+    global curva
+    if specialType == polyline.SPECIAL_TYPE:
+        poly = True
+    else:
+        poly = False
+
+    if specialType == curve.SPECIAL_TYPE:
+        curva = True
+    else:
+        curva = False
+
+def isKeepDrawing():
+    global poly
+    global curva
+    global pressed
+    global starting_pos
+    global ending_pos
+    if poly or curva:
+        pressed = True
+        starting_pos = ending_pos
+    else:
+        pressed = False
+
 
 #Fim funcoes para atualizar tela
 
@@ -131,22 +183,23 @@ while not finished:
         elif leftMouseUp(event):
             ending_pos = getMousePos()
             pressed = False
-            drawing = drawings.Drawing(settings.DRAW_COLOR)
-            for pixel in drawMethod(starting_pos, ending_pos):
-                drawing.setPos(pixel)
-            toDraw.append(drawing)
-            drawAndShow()
-            print("Ending pos: " , ending_pos)
-            if specialType:
-                poly = True
-            else:
-                poly = False
+            isSpecial()
 
-            if poly:
-                pressed = True
-                starting_pos = ending_pos
-            else:
-                pressed = False
+            if not curva or getCurvaPhase()==3:
+                drawing = drawings.Drawing(settings.DRAW_COLOR)
+                for pixel in drawMethod(starting_pos, ending_pos):
+                    drawing.setPos(pixel)
+                toDraw.append(drawing)
+                drawAndShow()
+                
+            print("Ending pos: " , ending_pos)
+            
+
+            isKeepDrawing()
+
+            if curva:
+                updateCurvaPhase()
+
         #Enquanto o botão esquerdo estiver setado como pressed, quando o mouse mexer, calcular como a o preview da figura e mostrar na tela
         elif dragging(event):
             last_pos = getMousePos()
@@ -161,40 +214,47 @@ while not finished:
             if event.key == pygame.K_1:
                 print("Drawing LINE")
                 drawMethod = line.drawLine
-                specialType = line.special()
+                specialType = settings.SPECIAL_TYPE_STANDARD
                 locationMethod = rectangle.getLocationRectangle
                 drawAndShow() #Essa atualizacao e para caso o usuario mude o mode sem movimentar o mouse, o que nao causaria a atualizacao da tela
             elif event.key == pygame.K_2:
                 print("Drawing RECTANGLE")
                 drawMethod = rectangle.drawRectangle
-                specialType = rectangle.special()
+                specialType = settings.SPECIAL_TYPE_STANDARD
                 locationMethod = rectangle.getLocationRectangle
                 drawAndShow()
             elif event.key == pygame.K_3:
                 print("Drawing SQUARE")
                 drawMethod = square.drawSquare
-                specialType = square.special()
+                specialType = settings.SPECIAL_TYPE_STANDARD
                 locationMethod = square.getLocationSquare
                 drawAndShow()
             elif event.key == pygame.K_4:
                 print("Drawing POLYLINE")
                 drawMethod = polyline.drawPoly
-                specialType = polyline.special()
+                specialType = polyline.SPECIAL_TYPE
                 locationMethod = square.getLocationSquare
                 drawAndShow()
             elif event.key == pygame.K_5:
                 print("Drawing CIRCLE")
                 drawMethod = circle.drawCircle
-                specialType = circle.special()
+                specialType = settings.SPECIAL_TYPE_STANDARD
                 locationMethod = square.getLocationSquare
                 drawAndShow()
             elif event.key == pygame.K_6:
                 print("Drawing CURVE")
                 drawMethod = curve.drawCurve
-                specialType = curve.special()
+                specialType = curve.SPECIAL_TYPE
                 locationMethod = square.getLocationSquare
-
+                curvaPhase = 1
                 drawAndShow()
+            elif event.key == pygame.K_7:
+                print("Drawing COLOR FILL")
+                drawMethod = fill.drawFill
+                specialType = fill.SPECIAL_TYPE
+                locationMethod = square.getLocationSquare
+                fill.getToDraw(toDraw)
+                
             #Famoso ctrl + z  - undo
             elif isCtrlZ(event) and len(toDraw) > 0:
                 ctrlZ()

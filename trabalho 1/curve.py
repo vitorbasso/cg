@@ -1,10 +1,35 @@
 import line, numpy
 
-def drawCurve(starting_pos, ending_pos):
-    for pixel in line.drawLine(starting_pos, ending_pos):
+SPECIAL_TYPE = "curve"
+starting_pos = (0,0)
+ending_pos = (0,0)
+first_control = (0,0)
+
+def drawCurve(starting_pos1, ending_pos1):
+    global starting_pos
+    global ending_pos
+    starting_pos = starting_pos1
+    ending_pos = ending_pos1
+    for pixel in bezierCurve(starting_pos, starting_pos, ending_pos, ending_pos):
+        yield pixel
+    
+    
+
+def getFirstControl(_, first_control1):
+    global starting_pos
+    global ending_pos
+    global first_control
+    first_control = first_control1
+    for pixel in bezierCurve(starting_pos, starting_pos, first_control, ending_pos):
         yield pixel
 
-SPECIAL_TYPE = "curve"
+
+def getSecondControl(_, second_control):
+    global starting_pos
+    global ending_pos
+    global first_control
+    for pixel in bezierCurve(starting_pos, second_control, first_control, ending_pos):
+        yield pixel
 
 def bezierCurve(starting_pos,first_control,second_control,ending_pos):
     anterior = (0,0)
@@ -32,4 +57,4 @@ def bezierCurve(starting_pos,first_control,second_control,ending_pos):
         yield anterior
 
 def special():
-    return False
+    return True

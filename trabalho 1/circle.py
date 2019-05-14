@@ -1,5 +1,9 @@
 import math, bresenham
 
+def extractPoints(starting_pos, ending_pos):
+    (x0, y0), (x1, y1) = starting_pos, ending_pos
+    return x0, y0, x1, y1
+
 def calculateDistance(x0, y0, x1, y1):
     return int(math.sqrt((x1-x0) ** 2 + (y1-y0) ** 2))
 
@@ -15,7 +19,7 @@ def times8(x, y, offsetX, offsetY):
     
 
 def drawCircle(starting_pos, ending_pos):
-    x0, y0, x1, y1 = bresenham.extractPoints(starting_pos, ending_pos)
+    x0, y0, x1, y1 = extractPoints(starting_pos, ending_pos)
     x, y = 0, calculateDistance(x0, y0, x1, y1)
     offsetX = calculateDistance(0, y0, x0, y0)
     offsetY = calculateDistance(x0, 0, x0, y0)
