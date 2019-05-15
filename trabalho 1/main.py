@@ -22,6 +22,7 @@ for i in range(16):
     clickedThisOnce.append(False)
 turnFill = False
 
+
 curvaPhase = 2
 starting_pos = (0,0)
 last_pos = (0,0)
@@ -90,6 +91,43 @@ def endPoly(event):
         drawAndShow()
     return end
 
+def testFill(trash, pixel):
+    global toDraw
+    global last_pos
+    global canvas
+    toFill = []
+
+    originalColor = canvas.get_at(pixel)[:3]
+
+    (width, height) = settings.SCREEN_DIMENSION
+    toFill.append(pixel)
+
+    drawing = drawings.Drawing(objectColor)
+    drawing.setPos(pixel)
+
+    if not originalColor == objectColor:
+
+        while len(toFill) > 0:
+            (x,y) = toFill.pop()
+
+            if canvas.get_at((x,y))[:3] == originalColor:
+                drawing.setPos((x,y))
+                canvas.set_at((x,y), objectColor)
+                if x + 1 < width:
+                    toFill.append((x+1, y))
+                if x - 1 > settings.CANVAS_START_AT:
+                    toFill.append((x-1, y))
+                if y + 1 < height:
+                    toFill.append((x, y + 1))
+                if y - 1 > 0:
+                    toFill.append((x,y-1))
+            
+
+    toDraw.append(drawing)
+    yield pixel
+        
+
+
 def updateCurvaPhase():
     global curvaPhase
     global pressed
@@ -116,6 +154,7 @@ def isSpecial():
     global specialType
     global poly
     global curva
+    global turnFill
     if specialType == polyline.SPECIAL_TYPE:
         poly = True
     else:
@@ -125,6 +164,11 @@ def isSpecial():
         curva = True
     else:
         curva = False
+
+    if specialType == "fill":
+        turnFill = True
+    else:
+        turnFill = False
 
 def isKeepDrawing():
     global poly
@@ -368,7 +412,7 @@ def isMenu():
     global specialType
     global curvaPhase
     global clickedThisOnce
-    global turnFill
+    global canvas
     if getMousePos()[0] < settings.CANVAS_START_AT:
         if isLine():
             print("Drawing LINE")
@@ -412,9 +456,11 @@ def isMenu():
             printMenu()
             if turnFill:
                 print("Drawing COLOR FILL")
-                drawMethod = fill.drawFill            
-                fill.getToDraw(toDraw)
+                #drawMethod = fill.drawFill            
+                #fill.getToDraw(toDraw)
+                drawMethod = testFill
                 specialType = fill.SPECIAL_TYPE
+                drawAndShow()
             return True
         else:
             return False
